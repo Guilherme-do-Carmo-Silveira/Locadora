@@ -250,6 +250,60 @@ SELECT num_cliente, logradouro + ', ' + CAST(num AS varchar(7)) + ' - CEP: ' + c
 FROM cliente
 WHERE num_cliente >= 5503
 
+GO
+
+SELECT id_filme, ano,
+	   CASE WHEN LEN(titulo) > 10
+	   THEN
+			SUBSTRING(titulo, 1, 10) + '...'
+	   ELSE
+			titulo
+	   END AS Titulo
+FROM filme
+WHERE id_filme IN
+(
+	SELECT id_filme
+	FROM dvd
+	WHERE data_fabricacao > '01-01-2020'
+)
+
+GO
+
+SELECT num_dvd, data_fabricacao,
+	   DATEDIFF(MONTH, data_fabricacao, GETDATE()) AS Meses_Fabricação
+FROM DVD
+WHERE id_filme IN
+(
+	SELECT id_filme
+	FROM filme
+	WHERE titulo = 'Interestelar'
+)
+
+GO
+
+SELECT num_dvd, data_locacao, data_devolucao,
+	   DATEDIFF(DAY, data_locacao, data_devolucao) AS Dias_Alugados,
+	   valor
+FROM locacao
+WHERE num_cliente IN
+(
+	SELECT num_cliente
+	FROM cliente
+	WHERE nome LIKE '%Rosa%'
+)
+
+GO
+
+SELECT nome,
+	   logradouro + ', ' + CAST(num AS varchar(7)) AS ENDEREÇO,
+	   SUBSTRING(cep, 1, 5) + '-' + SUBSTRING(CEP, 6, 3) AS CEP
+FROM cliente
+WHERE num_cliente IN
+(
+	SELECT num_cliente
+	FROM locacao
+	WHERE num_dvd = 10002
+)
 
 SELECT * FROM cliente
 SELECT * FROM dvd
